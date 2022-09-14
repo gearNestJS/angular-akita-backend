@@ -4,34 +4,55 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Post,
+  Put,
 } from '@nestjs/common';
 import { TaskService } from '@task/task/task.service';
 import { ITask } from '@task/interfaces/task.interface';
 import { TaskDto } from '@task/dto/task.dto';
+import { CreateTaskDto, UpdateTaskDto } from '@task/dto';
+import { TaskMapper } from '@task/services/task-mapper.service';
 
 @Controller('task')
 export class TaskController {
-  constructor(private readonly taskService: TaskService) {}
+  constructor(
+    private readonly taskService: TaskService,
+    private readonly mapper: TaskMapper,
+  ) {}
 
   @Get()
-  getAllTasks(): Promise<TaskDto[]> {
-    return this.taskService.getAllTasks();
+  async getAllTasks(): Promise<ITask[]> {
+    const tasksDto: TaskDto[] = await this.taskService.getAllTasks();
+    return this.mapper.mapTasks(tasksDto);
   }
 
-  @Get(':id')
-  getTask(@Param('id', ParseIntPipe) id: number): Promise<TaskDto> {
-    return this.taskService.getTask(id);
+  @Get(':slug')
+  async getUniqueTask(@Param('slug') slug: string): Promise<ITask> {
+    const taskDto: TaskDto = await this.taskService.getUniqueTask(slug);
+    return this.mapper.mapTask(taskDto);
   }
 
   @Post()
-  createTask(@Body() task: TaskDto): Promise<TaskDto> {
-    return this.taskService.createTask(task);
+  async createTask(@Body() task: CreateTaskDto): Promise<ITask> {
+    const taskDto: TaskDto = await this.taskService.createTask(task);
+    return this.mapper.mapTask(taskDto);
   }
 
-  @Delete(':id')
-  removeTask(@Param('id', ParseIntPipe) id: number): Promise<TaskDto> {
-    return this.taskService.removeTask(id);
+  @Put(':slug')
+  async updateTask(
+    @Body() updateTask: UpdateTaskDto,
+    @Param('slug') slug: string,
+  ): Promise<ITask> {
+    const taskDto: TaskDto = await this.taskService.updateTask(
+      slug,
+      updateTask,
+    );
+    return this.mapper.mapTask(taskDto);
+  }
+
+  @Delete(':slug')
+  async removeTask(@Param('slug') slug: string): Promise<ITask> {
+    const taskDto: TaskDto = await this.taskService.removeTask(slug);
+    return this.mapper.mapTask(taskDto);
   }
 }

@@ -1,7 +1,5 @@
-export class TaskDto {
-  readonly id: number;
+export class UpdateTaskDto {
   readonly title: string;
   readonly description: string;
   readonly status: boolean;
-  readonly slug: string;
 }
