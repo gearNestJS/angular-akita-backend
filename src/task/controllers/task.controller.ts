@@ -25,12 +25,14 @@ export class TaskController {
   @Get()
   async getAllTasks(): Promise<ITask[]> {
     const tasksDto: TaskDto[] = await this.source.getAllTasks();
+
     return this.mapper.mapTasks(tasksDto);
   }
 
   @Get(':slug')
   async getUniqueTask(@Param('slug') slug: string): Promise<ITask> {
     const taskDto: TaskDto = await this.source.getUniqueTask(slug);
+
     return this.mapper.mapTask(taskDto);
   }
 
@@ -38,6 +40,7 @@ export class TaskController {
   @UsePipes(new ValidationPipe())
   async createTask(@Body() task: CreateTaskDto): Promise<ITask> {
     const taskDto: TaskDto = await this.source.createTask(task);
+
     return this.mapper.mapTask(taskDto);
   }
 
@@ -48,12 +51,14 @@ export class TaskController {
     @Param('slug') slug: string,
   ): Promise<ITask> {
     const taskDto: TaskDto = await this.source.updateTask(slug, updateTask);
+
     return this.mapper.mapTask(taskDto);
   }
 
   @Delete(':slug')
   async removeTask(@Param('slug') slug: string): Promise<ITask> {
     const taskDto: TaskDto = await this.source.removeTask(slug);
+    
     return this.mapper.mapTask(taskDto);
   }
 }
