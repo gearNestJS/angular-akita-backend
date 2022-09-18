@@ -75,13 +75,11 @@ export class TaskService {
         HttpStatus.NOT_FOUND,
       );
     } else {
-      const { title, description, status } = updateTask;
+      const { status } = updateTask;
 
       return this.prismaService.task.update({
         where: { slug },
         data: {
-          title,
-          description,
           status,
         },
       });
